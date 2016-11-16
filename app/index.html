@@ -2,11 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>End-to-End Testing</title>
 </head>
 <body>
-<canvas>
-    <p>some-string</p>
-</canvas>
+<canvas id="canvasTest"></canvas>
 </body>
+
+<script>
+    var canvas = document.getElementById("canvasTest");
+    var ctx = canvas.getContext("2d");
+    ctx.font = "30px Arial";
+    ctx.fillText("Hello World",10,50);
+
+</script>
 </html>
