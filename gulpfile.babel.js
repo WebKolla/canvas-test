@@ -9,7 +9,7 @@ let httpServer, seleniumServer;
 
 gulp.task('http', (done) => {
   let app = connect().use(serveStatic('app'));
-  http.createServer(app).listen(9000, done);
+  httpServer = http.createServer(app).listen(9000, done);
 });
 
 gulp.task('selenium', (done) => {
@@ -31,8 +31,6 @@ gulp.task('e2e', ['http', 'selenium'], () => {
 });
 
 gulp.task('test', ['e2e'], () => {
-    if(typeof httpServer !== "undefined"){
-        httpServer.close();
-    }
+  httpServer.close();
   seleniumServer.kill();
 });
