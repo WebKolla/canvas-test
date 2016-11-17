@@ -7,9 +7,14 @@ import webdriver from 'gulp-webdriver';
 
 let httpServer, seleniumServer;
 
-gulp.task('http', (done) => {
+gulp.task('build', (done) => {
   let app = connect().use(serveStatic('app'));
   httpServer = http.createServer(app).listen(9000, done);
+});
+
+gulp.task('buildTest', (done) => {
+  let app = connect().use(serveStatic('app'));
+  httpServer = http.createServer(app).listen(9001, done);
 });
 
 gulp.task('selenium', (done) => {
@@ -22,7 +27,7 @@ gulp.task('selenium', (done) => {
   });
 });
 
-gulp.task('e2e', ['http', 'selenium'], () => {
+gulp.task('e2e', ['buildTest', 'selenium'], () => {
   return gulp.src('wdio.conf.js')
     .pipe(webdriver()).on('error', () => {
       seleniumServer.kill();

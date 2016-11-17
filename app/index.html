@@ -3,16 +3,472 @@
 <head>
     <meta charset="UTF-8">
     <title>End-to-End Testing</title>
+    <style>
+        #graph-container {
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        position: absolute;
+        }
+        #layout {
+        top: 10px;
+        left: 10px;
+        position: fixed;
+        }
+        #export {
+        top: 40px;
+        left: 10px;
+        position: fixed;
+        }
+    </style>
 </head>
 <body>
-<canvas id="canvasTest"></canvas>
+    <div id="container">
+        <div id="graph-container"></div>
+    </div>
 </body>
 
-<script>
-    var canvas = document.getElementById("canvasTest");
-    var ctx = canvas.getContext("2d");
-    ctx.font = "30px Arial";
-    ctx.fillText("Hello World",10,50);
 
+
+
+<!-- START SIGMA IMPORTS -->
+<script src="sigma/sigma.core.js"></script>
+<script src="sigma/conrad.js"></script>
+<script src="sigma/utils/sigma.utils.js"></script>
+<script src="sigma/utils/sigma.polyfills.js"></script>
+<script src="sigma/sigma.settings.js"></script>
+<script src="sigma/classes/sigma.classes.dispatcher.js"></script>
+<script src="sigma/classes/sigma.classes.configurable.js"></script>
+<script src="sigma/classes/sigma.classes.graph.js"></script>
+<script src="sigma/classes/sigma.classes.camera.js"></script>
+<script src="sigma/classes/sigma.classes.quad.js"></script>
+<script src="sigma/classes/sigma.classes.edgequad.js"></script>
+<script src="sigma/captors/sigma.captors.mouse.js"></script>
+<script src="sigma/captors/sigma.captors.touch.js"></script>
+<script src="sigma/renderers/sigma.renderers.canvas.js"></script>
+<script src="sigma/renderers/sigma.renderers.webgl.js"></script>
+<script src="sigma/renderers/sigma.renderers.svg.js"></script>
+<script src="sigma/renderers/sigma.renderers.def.js"></script>
+<script src="sigma/renderers/webgl/sigma.webgl.nodes.def.js"></script>
+<script src="sigma/renderers/webgl/sigma.webgl.nodes.fast.js"></script>
+<script src="sigma/renderers/webgl/sigma.webgl.edges.def.js"></script>
+<script src="sigma/renderers/webgl/sigma.webgl.edges.fast.js"></script>
+<script src="sigma/renderers/webgl/sigma.webgl.edges.arrow.js"></script>
+<script src="sigma/renderers/canvas/sigma.canvas.labels.def.js"></script>
+<script src="sigma/renderers/canvas/sigma.canvas.hovers.def.js"></script>
+<script src="sigma/renderers/canvas/sigma.canvas.nodes.def.js"></script>
+<script src="sigma/renderers/canvas/sigma.canvas.edges.def.js"></script>
+<script src="sigma/renderers/canvas/sigma.canvas.edges.curve.js"></script>
+<script src="sigma/renderers/canvas/sigma.canvas.edges.arrow.js"></script>
+<script src="sigma/renderers/canvas/sigma.canvas.edges.curvedArrow.js"></script>
+<script src="sigma/renderers/canvas/sigma.canvas.edgehovers.def.js"></script>
+<script src="sigma/renderers/canvas/sigma.canvas.edgehovers.curve.js"></script>
+<script src="sigma/renderers/canvas/sigma.canvas.edgehovers.arrow.js"></script>
+<script src="sigma/renderers/canvas/sigma.canvas.edgehovers.curvedArrow.js"></script>
+<script src="sigma/renderers/canvas/sigma.canvas.extremities.def.js"></script>
+<script src="sigma/renderers/svg/sigma.svg.utils.js"></script>
+<script src="sigma/renderers/svg/sigma.svg.nodes.def.js"></script>
+<script src="sigma/renderers/svg/sigma.svg.edges.def.js"></script>
+<script src="sigma/renderers/svg/sigma.svg.edges.curve.js"></script>
+<script src="sigma/renderers/svg/sigma.svg.labels.def.js"></script>
+<script src="sigma/renderers/svg/sigma.svg.hovers.def.js"></script>
+<script src="sigma/middlewares/sigma.middlewares.rescale.js"></script>
+<script src="sigma/middlewares/sigma.middlewares.copy.js"></script>
+<script src="sigma/misc/sigma.misc.animation.js"></script>
+<script src="sigma/misc/sigma.misc.bindEvents.js"></script>
+<script src="sigma/misc/sigma.misc.bindDOMEvents.js"></script>
+<script src="sigma/misc/sigma.misc.drawHovers.js"></script>
+
+<script>
+    /**
+     * This is a basic example on how to instantiate sigma. A random graph is
+     * generated and stored in the "graph" variable, and then sigma is instantiated
+     * directly with the graph.
+     *
+     * The simple instance of sigma is enough to make it render the graph on the on
+     * the screen, since the graph is given directly to the constructor.
+     */
+    var i,
+        s,
+        N = 20,
+        E = 10,
+        g = {
+        nodes: [],
+        edges: []
+        };
+    // Generate a random graph:
+    // for (i = 0; i < N; i++)
+    // g.nodes.push({
+    //     id: 'n' + i,
+    //     label: 'Node ' + i,
+    //     x: Math.random(),
+    //     y: Math.random(),
+    //     size: Math.random(),
+    //     color: ['#666', '#abc', '#eee', '#ff00aa'][Math.random() * 4 | 0]
+    // });
+    // for (i = 0; i < E; i++)
+    // g.edges.push({
+    //     id: 'e' + i,
+    //     source: 'n' + (Math.random() * N | 0),
+    //     target: 'n' + (Math.random() * N | 0),
+    //     size: Math.random(),
+    //     color: ['#666', '#abc', '#eee', '#ff00aa'][Math.random() * 4 | 0]
+    // });
+    // Instantiate sigma:
+
+var g = {
+	"edges": [{
+		"id": "e0.2694381940433872",
+		"target": "usersgroups",
+		"source": "assignment",
+		"color": "#9cf"
+	}, {
+		"id": "e0.22441163592885838",
+		"target": "usersgroups",
+		"source": "staging",
+		"color": "#9cf"
+	}, {
+		"id": "e0.19306925239244355",
+		"target": "referencedata",
+		"source": "resulting",
+		"color": "#9cf"
+	}, {
+		"id": "e0.5037996191887575",
+		"target": "referencedata",
+		"source": "charging",
+		"color": "#9cf"
+	}, {
+		"id": "e0.0768208801257928",
+		"target": "referencedata",
+		"source": "structure",
+		"color": "#9cf"
+	}, {
+		"id": "e0.036532706016306093",
+		"target": "referencedata",
+		"source": "resulting",
+		"color": "#9cf"
+	}, {
+		"id": "e0.6812884888333499",
+		"target": "scheduling",
+		"source": "resulting",
+		"color": "#9cf"
+	}, {
+		"id": "e0.09424999040341331",
+		"target": "scheduling",
+		"source": "lifecycle",
+		"color": "#9cf"
+	}, {
+		"id": "e0.9873171959759626",
+		"target": "structure",
+		"source": "staging",
+		"color": "#9cf"
+	}, {
+		"id": "e0.7739650834361635",
+		"target": "structure",
+		"source": "staging",
+		"color": "#9cf"
+	}, {
+		"id": "e0.05621936667301464",
+		"target": "structure",
+		"source": "lifecycle",
+		"color": "#9cf"
+	}, {
+		"id": "e0.8392194027961504",
+		"target": "structure",
+		"source": "mi",
+		"color": "#9cf"
+	}, {
+		"id": "e0.8627319554738755",
+		"target": "structure",
+		"source": "progression",
+		"color": "#9cf"
+	}, {
+		"id": "e0.6075868747944009",
+		"target": "structure",
+		"source": "lifecycle",
+		"color": "#9cf"
+	}, {
+		"id": "e0.9466524693159226",
+		"target": "progression",
+		"source": "lifecycle",
+		"color": "#9cf"
+	}, {
+		"id": "e0.3544988850223223",
+		"target": "usersgroups",
+		"source": "staging",
+		"color": "#9cf"
+	}, {
+		"id": "e0.06548172800080376",
+		"target": "scheduling",
+		"source": "lifecycle",
+		"color": "#9cf"
+	}, {
+		"id": "e0.5922081587691905",
+		"target": "assignment",
+		"source": "resulting",
+		"color": "#9cf"
+	}, {
+		"id": "e0.05738677915694956",
+		"target": "assignment",
+		"source": "lifecycle",
+		"color": "#9cf"
+	}, {
+		"id": "e0.644419737509003",
+		"target": "assignment",
+		"source": "charging",
+		"color": "#9cf"
+	}, {
+		"id": "e0.9467565776294133",
+		"target": "assignment",
+		"source": "structure",
+		"color": "#9cf"
+	}, {
+		"id": "e0.27841053770785495",
+		"target": "charging",
+		"source": "staging",
+		"color": "#9cf"
+	}, {
+		"id": "e0.1519128333065498",
+		"target": "charging",
+		"source": "structure",
+		"color": "#9cf"
+	}, {
+		"id": "e0.8563282321184513",
+		"target": "charging",
+		"source": "lifecycle",
+		"color": "#9cf"
+	}, {
+		"id": "e0.24198119337039992",
+		"target": "charging",
+		"source": "lifecycle",
+		"color": "#9cf"
+	}, {
+		"id": "e0.22698595830645307",
+		"target": "people",
+		"source": "staging",
+		"color": "#9cf"
+	}, {
+		"id": "e0.38901020282354026",
+		"target": "people",
+		"source": "structure",
+		"color": "#9cf"
+	}, {
+		"id": "e0.9695552830680152",
+		"target": "people",
+		"source": "lifecycle",
+		"color": "#9cf"
+	}, {
+		"id": "e0.6057304186572601",
+		"target": "people",
+		"source": "mi",
+		"color": "#9cf"
+	}, {
+		"id": "e0.2467886682635243",
+		"target": "material",
+		"source": "staging",
+		"color": "#9cf"
+	}, {
+		"id": "e0.8825499947954634",
+		"target": "material",
+		"source": "lifecycle",
+		"color": "#9cf"
+	}, {
+		"id": "e0.18783511852279156",
+		"target": "people",
+		"source": "lifecycle",
+		"color": "#9cf"
+	}, {
+		"id": "e0.35934844647208863",
+		"target": "progression",
+		"source": "lifecycle",
+		"color": "#9cf"
+	}],
+	"nodes": [{
+		"id": "outcomes",
+		"label": "outcomes",
+		"version": "1.0.0-SNAPSHOT",
+		"servicePomVersion": "1.7.18",
+		"customHover": "outcomes (v1.0.0-SNAPSHOT), Service Pom (v1.7.18)",
+		"y": 1,
+		"x": 0,
+		"color": "#f00",
+		"size": 24
+	}, {
+		"id": "material",
+		"label": "material",
+		"version": "2.0.31-SNAPSHOT",
+		"servicePomVersion": "2.0.24",
+		"customHover": "material (v2.0.31-SNAPSHOT), Service Pom (v2.0.24)",
+		"y": 0.9238795325112867,
+		"x": 0.3826834323650898,
+		"color": "#f00",
+		"size": 24
+	}, {
+		"id": "assignment",
+		"label": "assignment",
+		"version": "2.0.32-SNAPSHOT",
+		"servicePomVersion": "2.0.25",
+		"customHover": "assignment (v2.0.32-SNAPSHOT), Service Pom (v2.0.25)",
+		"y": 0.7071067811865476,
+		"x": 0.7071067811865475,
+		"color": "#f00",
+		"size": 24
+	}, {
+		"id": "scheduling",
+		"label": "scheduling",
+		"version": "2.0.39-SNAPSHOT",
+		"servicePomVersion": "1.7.24",
+		"customHover": "scheduling (v2.0.39-SNAPSHOT), Service Pom (v1.7.24)",
+		"y": 0.38268343236508984,
+		"x": 0.9238795325112867,
+		"color": "#f00",
+		"size": 24
+	}, {
+		"id": "progression",
+		"label": "progression",
+		"version": "2.0.60-SNAPSHOT",
+		"servicePomVersion": "2.0.39",
+		"customHover": "progression (v2.0.60-SNAPSHOT), Service Pom (v2.0.39)",
+		"y": 6.123233995736766e-17,
+		"x": 1,
+		"color": "#f00",
+		"size": 24
+	}, {
+		"id": "mi",
+		"label": "mi",
+		"version": "1.0.0-SNAPSHOT",
+		"servicePomVersion": "2.0.23",
+		"customHover": "mi (v1.0.0-SNAPSHOT), Service Pom (v2.0.23)",
+		"y": -0.3826834323650897,
+		"x": 0.9238795325112867,
+		"color": "#f00",
+		"size": 24
+	}, {
+		"id": "staging",
+		"label": "staging",
+		"version": "2.0.189-SNAPSHOT",
+		"servicePomVersion": "2.0.41",
+		"customHover": "staging (v2.0.189-SNAPSHOT), Service Pom (v2.0.41)",
+		"y": -0.7071067811865475,
+		"x": 0.7071067811865476,
+		"color": "#f00",
+		"size": 24
+	}, {
+		"id": "usersgroups",
+		"label": "usersgroups",
+		"version": "2.0.48-SNAPSHOT",
+		"servicePomVersion": "2.0.39",
+		"customHover": "usersgroups (v2.0.48-SNAPSHOT), Service Pom (v2.0.39)",
+		"y": -0.9238795325112867,
+		"x": 0.3826834323650899,
+		"color": "#f00",
+		"size": 24
+	}, {
+		"id": "people",
+		"label": "people",
+		"version": "2.0.40-SNAPSHOT",
+		"servicePomVersion": "2.0.12",
+		"customHover": "people (v2.0.40-SNAPSHOT), Service Pom (v2.0.12)",
+		"y": -1,
+		"x": 1.2246467991473532e-16,
+		"color": "#f00",
+		"size": 24
+	}, {
+		"id": "referencedata",
+		"label": "referencedata",
+		"version": "2.0.58-SNAPSHOT",
+		"servicePomVersion": "2.0.27",
+		"customHover": "referencedata (v2.0.58-SNAPSHOT), Service Pom (v2.0.27)",
+		"y": -0.9238795325112868,
+		"x": -0.38268343236508967,
+		"color": "#f00",
+		"size": 24
+	}, {
+		"id": "lifecycle",
+		"label": "lifecycle",
+		"version": "2.0.155-SNAPSHOT",
+		"servicePomVersion": "2.0.39",
+		"customHover": "lifecycle (v2.0.155-SNAPSHOT), Service Pom (v2.0.39)",
+		"y": -0.7071067811865477,
+		"x": -0.7071067811865475,
+		"color": "#f00",
+		"size": 24
+	}, {
+		"id": "resulting",
+		"label": "resulting",
+		"version": "2.0.26-SNAPSHOT",
+		"servicePomVersion": "2.0.25",
+		"customHover": "resulting (v2.0.26-SNAPSHOT), Service Pom (v2.0.25)",
+		"y": -0.38268343236509034,
+		"x": -0.9238795325112865,
+		"color": "#f00",
+		"size": 24
+	}, {
+		"id": "charging",
+		"label": "charging",
+		"version": "2.0.210-SNAPSHOT",
+		"servicePomVersion": "2.0.41",
+		"customHover": "charging (v2.0.210-SNAPSHOT), Service Pom (v2.0.41)",
+		"y": -1.8369701987210297e-16,
+		"x": -1,
+		"color": "#f00",
+		"size": 24
+	}, {
+		"id": "structure",
+		"label": "structure",
+		"version": "2.0.80-SNAPSHOT",
+		"servicePomVersion": "2.0.16",
+		"customHover": "structure (v2.0.80-SNAPSHOT), Service Pom (v2.0.16)",
+		"y": 0.38268343236509,
+		"x": -0.9238795325112866,
+		"color": "#f00",
+		"size": 24
+	}, {
+		"id": "audit",
+		"label": "audit",
+		"version": "2.0.25-SNAPSHOT",
+		"servicePomVersion": "2.0.22",
+		"customHover": "audit (v2.0.25-SNAPSHOT), Service Pom (v2.0.22)",
+		"y": 0.7071067811865474,
+		"x": -0.7071067811865477,
+		"color": "#f00",
+		"size": 24
+	}, {
+		"id": "notification",
+		"label": "notification",
+		"version": "1.0.0-SNAPSHOT",
+		"servicePomVersion": "2.0.19",
+		"customHover": "notification (v1.0.0-SNAPSHOT), Service Pom (v2.0.19)",
+		"y": 0.9238795325112865,
+		"x": -0.3826834323650904,
+		"color": "#f00",
+		"size": 24
+	}]
+}
+
+    s = new sigma({
+    graph: g
+    });
+    // Adding a canvas renderer
+    s.addRenderer({
+    container: 'graph-container',
+    type: 'svg'
+    });
+    s.refresh();
+    // Listeners
+    var force = false;
+    document.getElementById('layout').onclick = function() {
+    if (!force)
+        s.startForceAtlas2({slowDown: 10});
+    else
+        s.stopForceAtlas2();
+    force = !force;
+    };
+    document.getElementById('export').onclick = function() {
+    console.log('exporting...');
+    var output = s.toSVG({download: true, filename: 'mygraph.svg', size: 1000});
+    // console.log(output);
+    };
 </script>
 </html>
